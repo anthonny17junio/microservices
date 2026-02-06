@@ -14,9 +14,8 @@ microservices architecture with **client-side load balancing**.
 
 ## Architecture Overview
 
-- `msvc-products` exposes product data and runs in **multiple instances**
-- `msvc-items` consumes `msvc-products` using **client-side load balancing**
-- Communication is done via REST over HTTP
+- Communication is handled via **Spring WebClient** (Reactive Stack) and **OpenFeign** (Declarative Stack).
+- Uses `@LoadBalanced` exchange strategies to resolve service names through **Spring Cloud LoadBalancer**.
 
 ---
 
@@ -32,30 +31,43 @@ DATABASE db_springboot_cloud;
 ```
 
 ### 2. **Create the products table**:
-   Connect to the database and run:
+
+Connect to the database and run:
+
    ```sql
-   CREATE TABLE public.products (
-       id serial4 NOT NULL,
-       name varchar NULL,
-       price numeric NULL,
+   CREATE TABLE public.products
+   (
+       id         serial4 NOT NULL,
+       name       varchar NULL,
+       price      numeric NULL,
        created_at date NULL,
        CONSTRAINT products_pk PRIMARY KEY (id)
    );
    ```
 
 #### Optional Test Data
+
 You can use these inserts to populate your database for testing:
 
 ```sql
-INSERT INTO products (name, price, create_at) VALUES('Panasonic', 800, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Sony', 700, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Apple', 1000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Sony Notebook', 1000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Hewlett Packard', 500, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Bianchi', 600, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Nike', 100, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Adidas', 200, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Reebok', 300, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Panasonic', 800, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Sony', 700, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Apple', 1000, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Sony Notebook', 1000, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Hewlett Packard', 500, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Bianchi', 600, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Nike', 100, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Adidas', 200, NOW());
+INSERT INTO products (name, price, create_at)
+VALUES ('Reebok', 300, NOW());
 
 ```
 

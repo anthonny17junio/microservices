@@ -15,27 +15,46 @@ This service uses **Spring Cloud LoadBalancer** with **Simple Discovery Client**
 
 ---
 
-## Load Balancing Strategy
+## Load Balancing & Client Configuration
 
-This microservice uses **Spring Cloud LoadBalancer** for client-side load balancing.
+This microservice implements two communication strategies: **Feign** and **WebClient**. Currently, **WebClient** is the active implementation (`@Primary`).
+
+### 1. Dependencies Used
 
 ### Dependency Used
 
 ```xml
+
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-loadbalancer</artifactId>
 </dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
 ```
 
-### Service Discovery Configuration
+### 2. WebClient Configuration
+To enable load balancing with `WebClient`, we use a configuration class that injects the `@LoadBalanced` interceptor into the `WebClient.Builder`. This allows the client to resolve the service name `msvc-products` using the instances defined in the discovery client.
 
-Instead of using a service registry (Eureka, Consul, etc.), this project uses
-**Spring Cloud Simple Discovery Client**, where service instances are defined manually.
+```java
+@Configuration
+public class WebClientConfig {
+    @Value("${config.baseurl.endpoint.msvc-products}")
+    private String baseUrl;
 
-Configured in:
+    @Bean
+    @LoadBalanced
+    WebClient.Builder webClient() {
+        return WebClient.builder().baseUrl(this.baseUrl);
+    }
+}
+```
 
-`src/main/resources/application.properties`
+### 3. Service Discovery Configuration
+
+Service instances are defined manually in `src/main/resources/application.properties`. Spring Cloud LoadBalancer automatically distributes requests between these URIs:
 
 ```properties
 spring.cloud.discovery.client.simple.instances.msvc-products[0].uri=http://localhost:8001

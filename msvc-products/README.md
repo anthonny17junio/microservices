@@ -2,38 +2,52 @@
 
 A Spring Boot microservice for managing product data.
 
+> ⚠️ **Important**: This microservice is now intended to be run in **multiple instances** to test **client-side load
+balancing** with `msvc-items`.
+
 ## Prerequisites
 
 * **Java 17** or higher.
 * **PostgreSQL** running on port `5432`.
 
-## Database Setup
+## Running the Application (Multiple Instances)
 
-1. **Create the database**:
-   ```sql
-   CREATE DATABASE db_springboot_cloud;
-   ```
+To test **load balancing**, this microservice must be started **twice**, each time on a different port:
 
-2. **Create the products table**:
-   Connect to the database and run:
-   ```sql
-   CREATE TABLE public.products (
-       id serial4 NOT NULL,
-       name varchar NULL,
-       price numeric NULL,
-       created_at date NULL,
-       CONSTRAINT products_pk PRIMARY KEY (id)
-   );
-   ```
+* **Instance 1:** Port `8001`
+* **Instance 2:** Port `9001`
 
-## Running the Application
+Both instances connect to the **same database**.
 
-### Port Configuration
-By default, the application runs on **port 8001**. You can change this in `src/main/resources/application.properties` using the `server.port` property.
+---
+
+## Port Configuration Using VM Options (Required)
+
+Instead of hardcoding the port in `application.properties`, you must pass it as a **VM option** when starting the
+application.
+
+### Example
+
+**Run instance on port 8001**
+
+```
+-Dserver.port=8001
+```
+
+**Run instance on port 9001**
+
+```
+-Dserver.port=9001
+```
+
+---
+
+## Database Credentials
 
 You can provide the database credentials using one of the following two methods:
 
 ### 1. Command Line Arguments (Recommended)
+
 Pass the credentials directly when running the application. This method keeps your credentials out of the source code:
 
 ```bash
@@ -41,6 +55,7 @@ Pass the credentials directly when running the application. This method keeps yo
 ```
 
 ### 2. Application Properties
+
 Alternatively, you can edit the credentials in `src/main/resources/application.properties`:
 
 ```properties
@@ -48,25 +63,10 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/db_springboot_cloud
 spring.datasource.username=your_username
 spring.datasource.password=your_password
 ```
+
 ## API Endpoints
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| **GET** | `http://localhost:8001` | List all available products. |
-| **GET** | `http://localhost:8001/{id}` | Retrieve a specific product by its ID. |
-
-## Optional Test Data
-You can use these inserts to populate your database for testing:
-
-```sql
-INSERT INTO products (name, price, create_at) VALUES('Panasonic', 800, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Sony', 700, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Apple', 1000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Sony Notebook', 1000, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Hewlett Packard', 500, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Bianchi', 600, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Nike', 100, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Adidas', 200, NOW());
-INSERT INTO products (name, price, create_at) VALUES('Reebok', 300, NOW());
-
-```
+| Method | Endpoint                     | Description                 |
+|--------|------------------------------|-----------------------------|
+| GET    | http://localhost:{port}      | List all available products |
+| GET    | http://localhost:{port}/{id} | Retrieve product by ID      |

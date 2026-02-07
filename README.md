@@ -77,21 +77,16 @@ VALUES ('Reebok', 300, NOW());
 
 #### 1.2. **Eureka Server**: Start the `eureka-server` project on port `8761`. This is the first service to be launched.
 
-### 2. Start Product Microservice (2 instances)
+### 2. Start Product Microservice (Multiple Instances)
 
-Run the application twice with different ports:
+The service is configured to use dynamic ports. You can start as many instances as you want without port conflicts:
 
-**Instance 1**
-
+```bash
+# Open multiple terminals and run the same command in each:
+./mvnw spring-boot:run
 ```
--Dserver.port=8001
-```
 
-**Instance 2**
-
-```
--Dserver.port=9001
-```
+Eureka will automatically assign a random available port to each instance and register them with a unique ID.
 
 ### 3. Start Item Microservice
 
@@ -103,8 +98,7 @@ Start `msvc-items` (default port `8002`). It will automatically register with Eu
 
 - **Eureka Dashboard**: [http://localhost:8761/](http://localhost:8761/) (Check registered instances here).
 
-| Service               | URL                   |
-|-----------------------|-----------------------|
-| Products (instance 1) | http://localhost:8001 |
-| Products (instance 2) | http://localhost:9001 |
-| Items                 | http://localhost:8002 |
+| Service                       | URL                            |
+|-------------------------------|--------------------------------|
+| Products (multiple instances) | http://localhost:{random-port} |
+| Items                         | http://localhost:8002          |

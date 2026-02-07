@@ -21,23 +21,19 @@ Both instances connect to the **same database**.
 
 ---
 
-## Port Configuration Using VM Options (Required)
+## Dynamic Port Configuration
 
-Instead of hardcoding the port in `application.properties`, you must pass it as a **VM option** when starting the
-application.
+This microservice uses dynamic port allocation to support horizontal scaling.
 
-### Example
+- **Port**: `${PORT:0}` (Assigns a random available port at startup).
+- **Instance ID**: Generated using hostname, application name, and a random value to ensure uniqueness in Eureka.
 
-**Run instance on port 8001**
+### Running Multiple Instances
 
-```
--Dserver.port=8001
-```
+You no longer need to specify ports manually. Simply run the application multiple times:
 
-**Run instance on port 9001**
-
-```
--Dserver.port=9001
+```bash
+./mvnw spring-boot:run
 ```
 
 ---
@@ -73,7 +69,8 @@ spring.datasource.password=your_password
 
 ## Service Discovery
 
-This microservice registers automatically as a client in **Eureka Server**. Ensure the following property is set in `application.properties`:
+This microservice registers automatically as a client in **Eureka Server**. Ensure the following property is set in
+`application.properties`:
 
 ```properties
 eureka.client.service-url.defaultZone=http://localhost:8761/eureka

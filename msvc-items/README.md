@@ -1,11 +1,7 @@
 # Item Microservice
 
-A Spring Boot microservice that consumes the **Product Microservice** to manage items.
-An item consists of a product plus a randomly generated quantity for testing purposes.
-
-This service uses **Spring Cloud LoadBalancer** with **Simple Discovery Client** to perform
-**client-side load balancing** across multiple instances of the Product Microservice.
-
+A Spring Boot microservice that consumes the **Product Microservice**. It uses **Netflix Eureka
+** for dynamic service discovery.
 ---
 
 ## Prerequisites
@@ -17,7 +13,8 @@ This service uses **Spring Cloud LoadBalancer** with **Simple Discovery Client**
 
 ## Load Balancing & Client Configuration
 
-This microservice implements two communication strategies: **Feign** and **WebClient**. Currently, **WebClient** is the active implementation (`@Primary`).
+This microservice implements two communication strategies: **Feign** and **WebClient**. Currently, **WebClient** is the
+active implementation (`@Primary`).
 
 ### 1. Dependencies Used
 
@@ -27,18 +24,22 @@ This microservice implements two communication strategies: **Feign** and **WebCl
 
 <dependency>
     <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 </dependency>
 <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-webflux</artifactId>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-webflux</artifactId>
 </dependency>
 ```
 
 ### 2. WebClient Configuration
-To enable load balancing with `WebClient`, we use a configuration class that injects the `@LoadBalanced` interceptor into the `WebClient.Builder`. This allows the client to resolve the service name `msvc-products` using the instances defined in the discovery client.
+
+To enable load balancing with `WebClient`, we use a configuration class that injects the `@LoadBalanced` interceptor
+into the `WebClient.Builder`. This allows the client to resolve the service name `msvc-products` using the instances
+defined in the discovery client.
 
 ```java
+
 @Configuration
 public class WebClientConfig {
     @Value("${config.baseurl.endpoint.msvc-products}")
@@ -52,13 +53,12 @@ public class WebClientConfig {
 }
 ```
 
-### 3. Service Discovery Configuration
+### 3. Service Discovery (Eureka)
 
-Service instances are defined manually in `src/main/resources/application.properties`. Spring Cloud LoadBalancer automatically distributes requests between these URIs:
+Configured in `src/main/resources/application.properties`:
 
 ```properties
-spring.cloud.discovery.client.simple.instances.msvc-products[0].uri=http://localhost:8001
-spring.cloud.discovery.client.simple.instances.msvc-products[1].uri=http://localhost:9001
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka
 ```
 
 Spring Cloud LoadBalancer automatically distributes requests between these instances.

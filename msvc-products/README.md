@@ -70,3 +70,11 @@ spring.datasource.password=your_password
 |--------|------------------------------|-----------------------------|
 | GET    | http://localhost:{port}      | List all available products |
 | GET    | http://localhost:{port}/{id} | Retrieve product by ID      |
+
+## Service Discovery
+
+This microservice registers automatically as a client in **Eureka Server**. Ensure the following property is set in `application.properties`:
+
+```properties
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka
+``` 

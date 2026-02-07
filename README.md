@@ -1,12 +1,13 @@
 # Microservices with Spring Boot & Spring Cloud
 
-This repository contains a set of microservices built with **Spring Boot** and **Spring Cloud**, demonstrating a simple
-microservices architecture with **client-side load balancing**.
+This repository contains a set of microservices built with **Spring Boot** and **Spring Cloud**, demonstrating a
+microservices architecture with **Service Discovery (Eureka)** and **Client-side Load Balancing**.
 
 ## Projects in this Repository
 
 | Project       | Description                                       | Default Port |
 |---------------|---------------------------------------------------|--------------|
+| eureka-server | Service Discovery Server (Netflix Eureka)         | 8761         |
 | msvc-products | Product management microservice                   | 8001 / 9001  |
 | msvc-items    | Item aggregation microservice (consumes products) | 8002         |
 
@@ -14,15 +15,19 @@ microservices architecture with **client-side load balancing**.
 
 ## Architecture Overview
 
-- Communication is handled via **Spring WebClient** (Reactive Stack) and **OpenFeign** (Declarative Stack).
-- Uses `@LoadBalanced` exchange strategies to resolve service names through **Spring Cloud LoadBalancer**.
+- **Service Discovery**: Managed by Netflix Eureka.
+- **Communication**: Handled via **Spring WebClient** (Reactive) and **OpenFeign** (Declarative).
+- **Load Balancing**: Dynamic resolution of service names through **Spring Cloud LoadBalancer**.
 
 ---
 
-## Running the System
+## Running the System (Order Matters)
 
-### 1. Start PostgreSQL
+### 1. Start Infrastructure
 
+#### 1.1. PostgreSQL
+
+Ensure it's running on port `5432` with database `db_springboot_cloud`.
 Ensure PostgreSQL is running on port `5432` and create the database:
 
 ```sql
@@ -30,7 +35,7 @@ CREATE
 DATABASE db_springboot_cloud;
 ```
 
-### 2. **Create the products table**:
+**Create the products table**:
 
 Connect to the database and run:
 
@@ -45,7 +50,7 @@ Connect to the database and run:
    );
    ```
 
-#### Optional Test Data
+**Optional Test Data**:
 
 You can use these inserts to populate your database for testing:
 
@@ -68,10 +73,11 @@ INSERT INTO products (name, price, create_at)
 VALUES ('Adidas', 200, NOW());
 INSERT INTO products (name, price, create_at)
 VALUES ('Reebok', 300, NOW());
-
 ```
 
-### 3. Start Product Microservice (2 instances)
+#### 1.2. **Eureka Server**: Start the `eureka-server` project on port `8761`. This is the first service to be launched.
+
+### 2. Start Product Microservice (2 instances)
 
 Run the application twice with different ports:
 
@@ -87,13 +93,15 @@ Run the application twice with different ports:
 -Dserver.port=9001
 ```
 
-### 4. Start Item Microservice
+### 3. Start Item Microservice
 
-Start `msvc-items` normally (default port `8002`).
+Start `msvc-items` (default port `8002`). It will automatically register with Eureka and discover the products service.
 
 ---
 
-## Testing
+## Testing & Monitoring
+
+- **Eureka Dashboard**: [http://localhost:8761/](http://localhost:8761/) (Check registered instances here).
 
 | Service               | URL                   |
 |-----------------------|-----------------------|

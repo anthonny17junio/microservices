@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -75,8 +74,8 @@ public class SampleGlobalFilter implements GlobalFilter {
                             ResponseCookie.from(COOKIE_NAME, COOKIE_VALUE).build()
                     );
 
-                    // Modify the Content-Type of the response (be careful with this in production!)
-                    mutatedExchange.getResponse().getHeaders().setContentType(MediaType.TEXT_PLAIN);
+                    // Modify the Content-Type of the response (just for testing)
+                    //mutatedExchange.getResponse().getHeaders().setContentType(MediaType.TEXT_PLAIN);
                 }));
     }
 

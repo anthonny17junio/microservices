@@ -10,6 +10,11 @@ spring:
                 - Path=/api/products/**
               filters:
                 - StripPrefix=2
+                - name: ProductCookieName
+                  args:
+                    message: "Custom message for products microservice"
+                    name: user
+                    value: Anthonny
             - id: msvc-items
               uri: lb://msvc-items
               predicates:
